@@ -1,6 +1,6 @@
-# imooc-vue-music
+# vue-music
 
-> A Vue.js project
+> 本项目为一个 vue 音乐播放器
 
 ## Build Setup
 
@@ -18,4 +18,8 @@ npm run build
 npm run build --report
 ```
 
-For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+## 项目进度
+
+### 12月23日
+
+推荐栏目轮播图 ✅
