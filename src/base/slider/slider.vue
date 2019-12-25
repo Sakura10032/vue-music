@@ -4,44 +4,66 @@
       <slot>
       </slot>
     </div>
-<!--    <div class="dots">-->
-<!--      <span class="dot" :class="{active: currentPageIndex === index }" v-for="(item, index) in dots"></span>-->
-<!--    </div>-->
+    <div class="dots">
+      <span class="dot" :class="{active: currentPageIndex === index }" v-for="(item, index) in dots"></span>
+    </div>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
   import BScroll from 'better-scroll';
-  import {addClass} from "common/js/dom";
+  import {addClass} from 'common/js/dom';
 
   export default {
-    props:{
-      loop:{
+    props: {
+      loop: {
         type: Boolean,
         default: true
       },
-      autoplay:{
+      autoPlay: {
         type: Boolean,
         default: true
       },
-      interval:{
+      interval: {
         type: Number,
         default: 4000
-      },
+      }
+    },
+    data() {
+      return {
+        dots: [],
+        currentPageIndex: 0
+      }
     },
     mounted() {
       setTimeout(() => {
         this._setSliderWidth();
+        this._initDots();
         this._initSlider();
-      },20)
+
+        if (this.autoPlay) {
+          this._play();
+        }
+      }, 20);
+
+      window.addEventListener('resize', () => {
+        if (!this.slider) {
+          return;
+        }
+        this._setSliderWidth(true);
+        this.slider.refresh();
+      })
     },
-    methods:{
-      _setSliderWidth(){
+    destroyed() {
+      clearTimeout(this.timer);
+    },
+    methods: {
+      _setSliderWidth(isResize) {
         this.children = this.$refs.sliderGroup.children;
 
         let width = 0;
         let sliderWidth = this.$refs.slider.clientWidth;
-        for (let i = 0; i < this.children.length; i++){
+        for (let i = 0; i < this.children.length; i++) {
           let child = this.children[i];
           addClass(child, 'slider-item');
 
@@ -49,12 +71,12 @@
           width += sliderWidth;
         }
 
-        if (this.loop){
+        if (this.loop && !isResize) {
           width += 2 * sliderWidth;
         }
         this.$refs.sliderGroup.style.width = width + 'px';
       },
-      _initSlider(){
+      _initSlider() {
         this.slider = new BScroll(this.$refs.slider, {
           scrollX: true,
           scrollY: false,
@@ -65,7 +87,28 @@
             speed: 400
           }
         })
+
+        this.slider.on('scrollEnd', () => {
+          let pageIndex = this.slider.getCurrentPage().pageX;
+          this.currentPageIndex = pageIndex;
+
+          if (this.autoPlay) {
+            this._play();
+          }
+        })
+      },
+      _initDots() {
+        this.dots = new Array(this.children.length);
+      },
+      _play() {
+        clearTimeout(this.timer);
+        this.timer = setTimeout(() => {
+          this.slider.next();
+        }, this.interval)
       }
+    },
+    destroyed() { // 组件销毁时清除定时器
+      clearTimeout(this.timer);
     }
   }
 </script>
