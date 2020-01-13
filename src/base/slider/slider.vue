@@ -139,7 +139,7 @@
       position: absolute
       right: 0
       left: 0
-      bottom: 12px
+      top: 130px
       text-align: center
       font-size: 0
       .dot
